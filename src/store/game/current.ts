@@ -1,6 +1,7 @@
 import { createEffect, restore } from 'effector'
 
 import { BACKEND_URL } from '../../config'
+import { notificationApi } from '../notification'
 
 export const updateCurrentGameFx = createEffect(
   async ({ token }: { token: string }) => {
@@ -21,3 +22,5 @@ export const updateCurrentGameFx = createEffect(
 )
 
 export const currentGame = restore(updateCurrentGameFx.doneData, false)
+
+updateCurrentGameFx.failData.watch(e => notificationApi.pushError(e.message))

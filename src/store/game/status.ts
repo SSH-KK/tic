@@ -1,4 +1,5 @@
 import { createEvent, createStore, forward } from 'effector'
+import { notificationApi } from '../notification'
 
 import { endGame } from './end'
 import { initGame } from './summary'
@@ -30,3 +31,5 @@ forward({
   from: initGame,
   to: setRunning,
 })
+
+setWaiting.watch(() => notificationApi.pushInfo('Connected to game'))

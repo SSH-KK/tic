@@ -12,6 +12,8 @@
     updateCurrentGameFx,
     currentGame,
     joinClosedGame,
+    createClosedGame,
+    createGameWithRandom,
   } from '../store/game'
 
   const waitCurrentGame = updateCurrentGameFx.pending
@@ -36,7 +38,10 @@
       <span>Resume current game</span>
     </button>
     <fieldset disabled={$waitCurrentGame || $currentGame}>
-      <button disabled class="button is-fullwidth mb-3 is-large is-primary">
+      <button
+        class="button is-fullwidth mb-3 is-large is-primary"
+        on:click={() => createGameWithRandom()}
+      >
         <span class="icon"><Shuffle /></span>
         <span>Play with random opponent</span>
       </button>
@@ -49,7 +54,10 @@
         </span>
         <span>Play with bot</span></button
       >
-      <button class="button is-fullwidth mb-3 is-large is-primary">
+      <button
+        class="button is-fullwidth mb-3 is-large is-primary"
+        on:click={() => createClosedGame()}
+      >
         <span class="icon">
           <DoorClosed />
         </span>

@@ -9,6 +9,9 @@
     <div class="column is-half">
       <div class="notification">
         <span class="is-size-3">Game end</span>
+        <Navigate to="/" styles="button is-primary is-pulled-right is-medium"
+          >Go Home</Navigate
+        >
       </div>
     </div>
   </div>

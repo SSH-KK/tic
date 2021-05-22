@@ -32,6 +32,7 @@
       name: '/game',
       onlyIf: { guard: () => get(auth) !== null, redirect: '/login' },
       component: Game,
+      layout: Base,
     },
     {
       name: '/',

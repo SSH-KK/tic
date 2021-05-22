@@ -3,6 +3,7 @@ import { get } from 'svelte/store'
 
 import { BACKEND_URL } from '../../config'
 import { auth } from '../auth'
+import { notificationApi } from '../notification'
 
 type GameStart = {
   gameId: number
@@ -58,6 +59,9 @@ export const gameRequestFx = createEffect(
     if (type === GameRequestType.joinCurrent && json['gameId'] === null) {
       throw new Error('No current game')
     }
+    if (type === GameRequestType.createClosed && json['code']) {
+      notificationApi.pushInfo(`Created game with code ${json['code']}`)
+    }
     return {
       gameId: json[type === GameRequestType.joinClosed ? 'id' : 'gameId'],
       code: json['code'] ?? null,
@@ -104,3 +108,5 @@ forward({
     mapParams: (code: string) => ({ type: GameRequestType.joinClosed, code }),
   }),
 })
+
+gameRequestFx.failData.watch(e => notificationApi.pushError(e.message))

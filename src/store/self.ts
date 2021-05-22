@@ -2,6 +2,7 @@ import { createStore, createEffect } from 'effector'
 
 import { BACKEND_URL } from '../config'
 import type { User } from '../types/user'
+import { notificationApi } from './notification'
 
 export const fetchSelfFx = createEffect<string | null, User | null>(
   async token => {
@@ -20,6 +21,8 @@ export const fetchSelfFx = createEffect<string | null, User | null>(
     else return null
   },
 )
+
+fetchSelfFx.failData.watch(e => notificationApi.pushError(e.message))
 
 export const self = createStore<User | null>(null).on(
   fetchSelfFx.doneData,

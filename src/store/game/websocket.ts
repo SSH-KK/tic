@@ -1,14 +1,16 @@
 import { navigateTo } from 'svelte-router-spa'
+import { get } from 'svelte/store'
 
 import { WEBSOCKET_URL } from '../../config'
 import type { User } from '../../types/user'
 
 import { auth } from '../auth'
 import { gameRequestFx } from './start'
-import { setWaiting } from './status'
+import { setWaiting, gameStatus, GameStatus } from './status'
 import { initGame } from './summary'
 import { resign } from './action'
 import { endGame } from './end'
+import { self } from '../self'
 
 const ws = new WebSocket(WEBSOCKET_URL)
 
@@ -51,7 +53,15 @@ ws.addEventListener('message', event => {
   const payload = data.payload
   type MessageType = 'currentMap' | 'newTurn' | 'userConnected' | 'endGame'
   const type: MessageType = payload.type
-  if (type === 'userConnected') return
+  if (type === 'userConnected' && get(gameStatus) === GameStatus.waiting) {
+    if (payload.player.nickname !== get(self).nickname) {
+      wsSend({
+        command: 'auth',
+        token: token,
+        game_id: gameId,
+      })
+    }
+  }
   if (type === 'currentMap' && payload.opponent.position === '0') return
   if (type === 'currentMap') {
     const self: User = { nickname: payload.you.nickname }
