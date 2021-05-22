@@ -7,6 +7,7 @@
   import Register from './pages/Register.svelte'
   import Home from './pages/Home.svelte'
   import Game from './pages/Game.svelte'
+  import GameEnd from './pages/GameEnd.svelte'
 
   import { auth } from './store/auth'
 
@@ -22,15 +23,21 @@
       layout: Base,
     },
     {
-      name: '/',
+      name: '/end',
       onlyIf: { guard: () => get(auth) !== null, redirect: '/login' },
-      component: Home,
+      component: GameEnd,
       layout: Base,
     },
     {
       name: '/game',
       onlyIf: { guard: () => get(auth) !== null, redirect: '/login' },
       component: Game,
+    },
+    {
+      name: '/',
+      onlyIf: { guard: () => get(auth) !== null, redirect: '/login' },
+      component: Home,
+      layout: Base,
     },
   ]
 </script>

@@ -1,10 +1,7 @@
 import { createStore, createEffect } from 'effector'
 
 import { BACKEND_URL } from '../config'
-
-export type User = {
-  nickname: string
-}
+import type { User } from '../types/user'
 
 export const fetchSelfFx = createEffect<string | null, User | null>(
   async token => {
