@@ -8,6 +8,7 @@
   import Home from './pages/Home.svelte'
   import Game from './pages/Game.svelte'
   import GameEnd from './pages/GameEnd.svelte'
+  import Board from './components/Board.svelte'
 
   import { auth } from './store/auth'
 
@@ -39,6 +40,10 @@
       onlyIf: { guard: () => get(auth) !== null, redirect: '/login' },
       component: Home,
       layout: Base,
+    },
+    {
+      name: '/board',
+      component: Board,
     },
   ]
 </script>

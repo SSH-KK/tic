@@ -4,7 +4,7 @@ import { endGame } from './end'
 
 type GameSummary = {
   white: User
-  blacK: User
+  black: User
   selfColor: 'black' | 'white'
   gameId: number
 }

@@ -4,13 +4,16 @@ import { get } from 'svelte/store'
 import { WEBSOCKET_URL } from '../../config'
 import type { User } from '../../types/user'
 
+import { Place, setCells } from './board'
 import { auth } from '../auth'
 import { gameRequestFx } from './start'
 import { setWaiting, gameStatus, GameStatus } from './status'
-import { initGame } from './summary'
-import { resign } from './action'
+import { gameSummary, initGame } from './summary'
+import { move, pass, resign } from './action'
 import { endGame } from './end'
 import { self } from '../self'
+import { rotateAntiClockwise } from '../../utils/matrix'
+import { lockingApi } from './state'
 
 const ws = new WebSocket(WEBSOCKET_URL)
 
@@ -45,6 +48,24 @@ resign.watch(() => {
   })
 })
 
+pass.watch(() => {
+  wsSend({
+    command: 'pass',
+    token: token,
+    game_id: gameId,
+  })
+})
+
+move.watch(coord => {
+  wsSend({
+    command: 'move',
+    token: token,
+    place: coord.toString().toLowerCase(),
+    game_id: gameId,
+  })
+  lockingApi.lock()
+})
+
 ws.addEventListener('message', event => {
   const data = JSON.parse(event.data)
   if (data.error) {
@@ -63,19 +84,29 @@ ws.addEventListener('message', event => {
     }
   }
   if (type === 'currentMap' && payload.opponent.position === '0') return
-  if (type === 'currentMap') {
+  else if (type === 'currentMap' && get(gameStatus) !== GameStatus.running) {
     const self: User = { nickname: payload.you.nickname }
     const opponent: User = { nickname: payload.opponent.nickname }
     const selfColor = payload.player === 'w' ? 'white' : 'black'
     initGame({
       white: selfColor === 'white' ? self : opponent,
-      blacK: selfColor === 'black' ? self : opponent,
+      black: selfColor === 'black' ? self : opponent,
       selfColor: selfColor,
       gameId,
     })
-    return
-  }
-  if (type === 'endGame') {
+    const currentMap = payload.currentMap as Place[][]
+    setCells(rotateAntiClockwise(currentMap))
+    console.log(payload)
+    if (payload.turn[0] !== payload.player) {
+      lockingApi.lock()
+    }
+  } else if (type === 'newTurn') {
+    const currentMap = payload.currentMap as Place[][]
+    setCells(rotateAntiClockwise(currentMap))
+    if (get(gameSummary).selfColor === payload.turn) {
+      lockingApi.unlock()
+    }
+  } else if (type === 'endGame') {
     endGame({
       finalScore: payload.finalScore,
       loser: {
@@ -92,5 +123,6 @@ ws.addEventListener('message', event => {
       },
       winnerColor: payload.winner === 'w' ? 'white' : 'black',
     })
+    gameId = null
   }
 })

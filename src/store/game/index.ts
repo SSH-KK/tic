@@ -15,6 +15,10 @@ import {
 import { gameStatus, GameStatus } from './status'
 import { updateCurrentGameFx, currentGame } from './current'
 import { auth } from '../auth'
+import { board, Board } from './board'
+import { gameSummary } from './summary'
+
+import { gameState, locking } from './state'
 
 export {
   createClosedGame,
@@ -38,3 +42,10 @@ forward({
 export { updateCurrentGameFx, currentGame }
 
 attachedToken()
+
+export { board }
+export type { Board }
+
+export { gameState, locking }
+
+export { gameSummary }

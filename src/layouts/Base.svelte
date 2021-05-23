@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Route, Navigate, routeIsActive } from 'svelte-router-spa'
+  import { Route, Navigate } from 'svelte-router-spa'
   import Notifications from '../components/Notifications.svelte'
 
   import { logout } from '../store/auth'
@@ -9,9 +9,10 @@
 </script>
 
 <Notifications />
-<div>
-  {#if !routeIsActive('/game')}
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+
+<div class="content-wrapper">
+  {#if currentRoute.path !== '/game'}
+    <nav class="navbar mb-3" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
         <div class="navbar-item">
           <Navigate to="/" styles="button is-primary is-light">TIC</Navigate>
@@ -31,7 +32,15 @@
       {/if}
     </nav>
   {/if}
-  <div class="container mt-3">
+  <div class="content-wrapper px-3">
     <Route {currentRoute} params={{}} />
   </div>
 </div>
+
+<style>
+  .content-wrapper {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+</style>
