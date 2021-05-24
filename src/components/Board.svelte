@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { writable } from 'svelte/store'
+  import { derived, writable } from 'svelte/store'
 
   import { alphabet, Coord } from '../types/coord'
 
   import { board, locking } from '../store/game'
   import { move } from '../store/game/action'
   import { notificationApi } from '../store/notification'
+  import { selectedApi, selectedCoords } from '../store/game/ui'
 
   const size = 1500
   const WHITE_COLOR = '#F0F0F0'
@@ -15,6 +16,10 @@
   const ACCENT_COLOR = '#20E7C1'
   const boardSize = 13
   const cellSize = size / (boardSize + 1)
+
+  const selected = derived(selectedCoords, state =>
+    Array.from(state).map(coord => Coord.parse(coord)),
+  )
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
@@ -193,9 +198,23 @@
         }
       }),
     )
+
+    $selected.forEach(coord => {
+      const x = (coord.x + 1) * cellSize
+      const y = (coord.y + 1) * cellSize
+      ctx.strokeStyle = ACCENT_COLOR
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.arc(x, y, cellSize / 2.5, 0, 2 * Math.PI)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(x, y, cellSize / 3, 0, 2 * Math.PI)
+      ctx.stroke()
+    })
   }
 
   mousePos.subscribe(draw)
+  selected.subscribe(draw)
 
   function mousemoveHandler(event: MouseEvent) {
     if ($locking) {
@@ -211,15 +230,23 @@
   function mouseclickHandler(event: MouseEvent) {
     if ($locking) return
     const mpos = event2xy(event)
-    if (mpos) {
-      move(new Coord(mpos.x, mpos.y))
-    }
+    if (!mpos) return
+    const coord = new Coord(mpos.x, mpos.y)
+    move(coord)
+  }
+
+  function contextmenuHandler(event: MouseEvent) {
+    const mpos = event2xy(event)
+    if (!mpos) return
+    const coord = new Coord(mpos.x, mpos.y)
+    selectedApi.toogle(coord)
   }
 </script>
 
 <canvas
   on:mousemove={mousemoveHandler}
   on:click={mouseclickHandler}
+  on:contextmenu|preventDefault={contextmenuHandler}
   bind:this={canvas}
   width={size}
   height={size}

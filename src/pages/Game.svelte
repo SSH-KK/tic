@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Navigate } from 'svelte-router-spa'
   import dayjs from 'dayjs'
+  import { CaretUp } from 'svelte-bootstrap-icons/lib/CaretUp'
+  import { Controller } from 'svelte-bootstrap-icons/lib/Controller'
 
   import Board from '../components/Board.svelte'
 
@@ -13,6 +15,7 @@
     locking,
   } from '../store/game'
   import { pass, resign } from '../store/game/action'
+  import { selectedCoords, selectedApi } from '../store/game/ui'
 </script>
 
 {#if $gameStatus === GameStatus.notStarted}
@@ -73,8 +76,36 @@
         </div>
       </div>
       <div class="level-right">
+        {#if $selectedCoords.size}
+          <div class="level-item">
+            <button class="button" on:click={() => selectedApi.clear()}
+              >Clear selection</button
+            >
+          </div>
+        {/if}
         <div class="level-item">
-          <span class="is-size-3" class:has-text-primary={$blackTimer.isActive}
+          <div class="dropdown is-up is-right is-hoverable">
+            <div class="dropdown-trigger">
+              <button class="button">
+                <span class="icon is-small"><Controller /></span>
+                Leela
+                <span class="icon is-small">
+                  <CaretUp />
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a class="dropdown-item"> Best move </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="level-item">
+          <span
+            class="is-size-3 timer"
+            class:has-text-primary={$blackTimer.isActive}
             >{dayjs($blackTimer.leftTime).format('mm:ss')}</span
           >
         </div>
@@ -91,6 +122,11 @@
 {/if}
 
 <style>
+  .timer {
+    min-width: 3em;
+    text-align: center;
+  }
+
   .wrapper {
     display: flex;
     flex-direction: column;
