@@ -13,9 +13,14 @@
     blackTimer,
     whiteTimer,
     locking,
+    board,
   } from '../store/game'
   import { pass, resign } from '../store/game/action'
   import { selectedCoords, selectedApi } from '../store/game/ui'
+  import { bestMove, bestMoveFx } from '../store/game/hints/bestMove'
+  import { boardApi } from '../store/game/board'
+
+  const bestMoveFxPending = bestMoveFx.pending
 </script>
 
 {#if $gameStatus === GameStatus.notStarted}
@@ -76,6 +81,13 @@
         </div>
       </div>
       <div class="level-right">
+        {#if $board.leelaHints.length}
+          <div class="level-item">
+            <button class="button" on:click={() => boardApi.clearLeelaHints()}
+              >Clear hints</button
+            >
+          </div>
+        {/if}
         {#if $selectedCoords.size}
           <div class="level-item">
             <button class="button" on:click={() => selectedApi.clear()}
@@ -97,7 +109,18 @@
             <div class="dropdown-menu">
               <div class="dropdown-content">
                 <!-- svelte-ignore a11y-missing-attribute -->
-                <a class="dropdown-item"> Best move </a>
+                <a
+                  class="dropdown-item"
+                  on:click={() => bestMove()}
+                  disabled={$bestMoveFxPending}
+                >
+                  Best move
+                </a>
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a class="dropdown-item"> Best quarter </a>
+                <hr class="dropdown-divider" />
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a class="dropdown-item"> Heatmap </a>
               </div>
             </div>
           </div>

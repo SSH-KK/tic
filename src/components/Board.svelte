@@ -168,15 +168,17 @@
         }
       }),
     )
+
     if (state.lastPlace) {
       const x = (state.lastPlace.x + 1) * cellSize
       const y = (state.lastPlace.y + 1) * cellSize
-      ctx.strokeStyle = ACCENT_COLOR
-      ctx.lineWidth = 3
+      ctx.fillStyle = ACCENT_COLOR
+      ctx.lineWidth = 5
       ctx.beginPath()
-      ctx.arc(x, y, cellSize / 2.5, 0, 2 * Math.PI)
-      ctx.stroke()
+      ctx.arc(x, y, cellSize / 4.5, 0, 2 * Math.PI)
+      ctx.fill()
     }
+
     state.powers.forEach((row, ridx) =>
       row.forEach((col, cidx) => {
         if (col === 0) return
@@ -198,6 +200,23 @@
         }
       }),
     )
+
+    state.leelaHints.forEach(hint => {
+      switch (hint.type) {
+        case 'single':
+          const coord = hint.coords[0]
+          const x = (coord.x + 1) * cellSize
+          const y = (coord.y + 1) * cellSize
+          ctx.strokeStyle = ACCENT_COLOR
+          ctx.lineWidth = 6
+          ctx.beginPath()
+          ctx.arc(x, y, cellSize / 2.8, 0, 2 * Math.PI)
+          ctx.stroke()
+          break
+        default:
+          break
+      }
+    })
 
     $selected.forEach(coord => {
       const x = (coord.x + 1) * cellSize

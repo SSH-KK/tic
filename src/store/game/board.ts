@@ -8,10 +8,17 @@ import { initGame } from './summary'
 
 export type Place = -1 | 0 | 1
 
+export type LeelaHint = {
+  type: 'single' | 'heatmap' | 'sequence'
+  heatmap: number[][] | null
+  coords: Coord[]
+}
+
 export type Board = {
   cells: Place[][]
   lastPlace: Coord | null
   powers: number[][]
+  leelaHints: LeelaHint[]
 }
 
 type NewMove = {
@@ -28,6 +35,7 @@ export const board = createStore<Board | null>(null)
     cells: _generateCells(13),
     lastPlace: null,
     powers: _generateCells(13),
+    leelaHints: [],
   }))
   .on(endGame, () => null)
 
@@ -43,4 +51,9 @@ export const boardApi = createApi(board, {
     lastPlace: place,
     powers: calculatePowers(cells),
   }),
+  pushLeelaHint: (state, hint: LeelaHint) => ({
+    ...state,
+    leelaHints: [...state.leelaHints, hint],
+  }),
+  clearLeelaHints: state => ({ ...state, leelaHints: [] }),
 })
