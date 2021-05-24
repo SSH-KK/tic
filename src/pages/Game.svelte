@@ -22,6 +22,7 @@
   import { heatmap, heatmapFx } from '../store/game/hints/heatmap'
 
   import { boardApi } from '../store/game/board'
+  import Statusbar from '../components/Statusbar.svelte'
 
   const bestMoveFxPending = bestMoveFx.pending
   const bestQuarterFxPending = bestQuarterFx.pending
@@ -74,6 +75,7 @@
         </div>
       </div>
     </div>
+    <Statusbar value={Math.random()} />
     <div class="board-wrapper">
       <Board />
     </div>
