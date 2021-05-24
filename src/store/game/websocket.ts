@@ -4,7 +4,7 @@ import { get } from 'svelte/store'
 import { WEBSOCKET_URL } from '../../config'
 import type { User } from '../../types/user'
 
-import { Place, boardApi } from './board'
+import { Place, boardApi, board } from './board'
 import { auth } from '../auth'
 import { gameRequestFx } from './start'
 import { setWaiting, gameStatus, GameStatus } from './status'
@@ -16,6 +16,8 @@ import { rotateAntiClockwise } from '../../utils/matrix'
 import { lockingApi } from './state'
 import { Coord } from '../../types/coord'
 import { timersApi } from './timers'
+import { notificationApi } from '../notification'
+import { createEffect, sample } from 'effector'
 
 const ws = new WebSocket(WEBSOCKET_URL)
 
@@ -60,19 +62,35 @@ pass.watch(() => {
   lockingApi.lock()
 })
 
-move.watch(coord => {
-  wsSend({
-    command: 'move',
-    token: token,
-    place: coord.toString().toLowerCase(),
-    game_id: gameId,
-  })
-  lockingApi.lock()
+const moveFx = createEffect((coord: Coord | null) => {
+  if (coord) {
+    wsSend({
+      command: 'move',
+      token: token,
+      place: coord.toString().toLowerCase(),
+      game_id: gameId,
+    })
+    lockingApi.lock()
+  }
+})
+
+sample({
+  clock: move,
+  source: board,
+  fn: (board, coord) => {
+    if (board.cells[coord.y][coord.x] !== 0) return null
+    else return coord
+  },
+  target: moveFx,
 })
 
 ws.addEventListener('message', event => {
   const data = JSON.parse(event.data)
   if (data.error) {
+    const text = data.error as string
+    notificationApi.pushError(`${text[0].toUpperCase()}${text.slice(1)}`)
+    lockingApi.unlock()
+    return
   }
   if (!data.payload) return
   const payload = data.payload
