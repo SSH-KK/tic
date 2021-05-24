@@ -1,8 +1,17 @@
 <script lang="ts">
   import { Navigate } from 'svelte-router-spa'
+  import dayjs from 'dayjs'
+
   import Board from '../components/Board.svelte'
 
-  import { gameStatus, GameStatus, gameSummary } from '../store/game'
+  import {
+    gameStatus,
+    GameStatus,
+    gameSummary,
+    blackTimer,
+    whiteTimer,
+    locking,
+  } from '../store/game'
   import { pass, resign } from '../store/game/action'
 </script>
 
@@ -34,10 +43,17 @@
     <div class="level mb-0">
       <div class="level-left">
         <div class="level-item">
-          <span class="is-size-4">{$gameSummary.white.nickname}</span>
+          <span class="is-size-4" class:has-text-primary={$whiteTimer.isActive}
+            >White: {$gameSummary.white.nickname}</span
+          >
         </div>
       </div>
       <div class="level-right">
+        <div class="level-item">
+          <span class="is-size-3"
+            >{dayjs($whiteTimer.leftTime).format('mm:ss')}</span
+          >
+        </div>
         <div class="level-item">
           <button class="button is-danger is-outlined" on:click={() => resign()}
             >Resign</button
@@ -51,13 +67,22 @@
     <div class="level">
       <div class="level-left">
         <div class="level-item">
-          <span class="is-size-4">{$gameSummary.black.nickname}</span>
+          <span class="is-size-4" class:has-text-primary={$blackTimer.isActive}
+            >Black: {$gameSummary.black.nickname}</span
+          >
         </div>
       </div>
       <div class="level-right">
         <div class="level-item">
-          <button class="button is-warning is-outlined" on:click={() => pass()}
-            >Pass</button
+          <span class="is-size-3"
+            >{dayjs($blackTimer.leftTime).format('mm:ss')}</span
+          >
+        </div>
+        <div class="level-item">
+          <button
+            disabled={$locking}
+            class="button is-warning is-outlined"
+            on:click={() => pass()}>Pass</button
           >
         </div>
       </div>

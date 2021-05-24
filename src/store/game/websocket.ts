@@ -4,7 +4,7 @@ import { get } from 'svelte/store'
 import { WEBSOCKET_URL } from '../../config'
 import type { User } from '../../types/user'
 
-import { Place, setCells } from './board'
+import { Place, boardApi } from './board'
 import { auth } from '../auth'
 import { gameRequestFx } from './start'
 import { setWaiting, gameStatus, GameStatus } from './status'
@@ -14,6 +14,8 @@ import { endGame } from './end'
 import { self } from '../self'
 import { rotateAntiClockwise } from '../../utils/matrix'
 import { lockingApi } from './state'
+import { Coord } from '../../types/coord'
+import { timersApi } from './timers'
 
 const ws = new WebSocket(WEBSOCKET_URL)
 
@@ -46,6 +48,7 @@ resign.watch(() => {
     token: token,
     game_id: gameId,
   })
+  lockingApi.lock()
 })
 
 pass.watch(() => {
@@ -54,6 +57,7 @@ pass.watch(() => {
     token: token,
     game_id: gameId,
   })
+  lockingApi.lock()
 })
 
 move.watch(coord => {
@@ -95,14 +99,30 @@ ws.addEventListener('message', event => {
       gameId,
     })
     const currentMap = payload.currentMap as Place[][]
-    setCells(rotateAntiClockwise(currentMap))
-    console.log(payload)
+    boardApi.setCells(rotateAntiClockwise(currentMap))
+    timersApi.set({
+      blackEnd: payload.turnBlackEndedAt,
+      whiteEnd: payload.turnWhiteEndedAt,
+      currentTurn: payload.turn,
+      now: data.time,
+    })
     if (payload.turn[0] !== payload.player) {
       lockingApi.lock()
     }
   } else if (type === 'newTurn') {
     const currentMap = payload.currentMap as Place[][]
-    setCells(rotateAntiClockwise(currentMap))
+    if (payload.moveType !== 'pass') {
+      boardApi.newMove({
+        cells: rotateAntiClockwise(currentMap),
+        place: Coord.parse(payload.place),
+      })
+    }
+    timersApi.set({
+      blackEnd: payload.turnBlackEndedAt,
+      whiteEnd: payload.turnWhiteEndedAt,
+      currentTurn: payload.turn,
+      now: data.time,
+    })
     if (get(gameSummary).selfColor === payload.turn) {
       lockingApi.unlock()
     }

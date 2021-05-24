@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { derived, writable } from 'svelte/store'
+  import { writable } from 'svelte/store'
 
   import { alphabet, Coord } from '../types/coord'
 
@@ -11,6 +11,7 @@
   const size = 1500
   const WHITE_COLOR = '#F0F0F0'
   const BLACK_COLOR = '#212529'
+  const ACCENT_COLOR = '#20E7C1'
   const boardSize = 13
   const cellSize = size / (boardSize + 1)
 
@@ -20,8 +21,6 @@
     x: -1,
     y: -1,
   })
-
-  locking.subscribe(console.log)
 
   onMount(() => {
     ctx = canvas.getContext('2d')
@@ -147,22 +146,31 @@
         if (col !== 0) {
           ctx.beginPath()
           ctx.fillStyle = col === -1 ? WHITE_COLOR : BLACK_COLOR
-          ctx.arc(x, y, cellSize / 2, 0, 2 * Math.PI)
+          ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
           ctx.fill()
           ctx.beginPath()
           ctx.strokeStyle = col === 1 ? WHITE_COLOR : BLACK_COLOR
-          ctx.arc(x, y, cellSize / 2, 0, 2 * Math.PI)
+          ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
           ctx.stroke()
         } else if (ridx === mpos.y && cidx === mpos.x) {
           ctx.globalAlpha = 0.5
           ctx.beginPath()
           ctx.fillStyle = BLACK_COLOR
-          ctx.arc(x, y, cellSize / 2, 0, 2 * Math.PI)
+          ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
           ctx.fill()
           ctx.globalAlpha = 1
         }
       }),
     )
+    if (state.lastPlace) {
+      const x = (state.lastPlace.x + 1) * cellSize
+      const y = (state.lastPlace.y + 1) * cellSize
+      ctx.strokeStyle = ACCENT_COLOR
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.arc(x, y, cellSize / 2.5, 0, 2 * Math.PI)
+      ctx.stroke()
+    }
   }
 
   mousePos.subscribe(draw)

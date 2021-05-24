@@ -20,6 +20,8 @@ import { gameSummary } from './summary'
 
 import { gameState, locking } from './state'
 
+import { blackTimer, whiteTimer } from './timers'
+
 export {
   createClosedGame,
   createGameWithBot,
@@ -49,3 +51,5 @@ export type { Board }
 export { gameState, locking }
 
 export { gameSummary }
+
+export { blackTimer, whiteTimer }
