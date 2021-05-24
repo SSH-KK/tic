@@ -50,7 +50,7 @@
       </div>
       <div class="level-right">
         <div class="level-item">
-          <span class="is-size-3"
+          <span class="is-size-3" class:has-text-primary={$whiteTimer.isActive}
             >{dayjs($whiteTimer.leftTime).format('mm:ss')}</span
           >
         </div>
@@ -74,7 +74,7 @@
       </div>
       <div class="level-right">
         <div class="level-item">
-          <span class="is-size-3"
+          <span class="is-size-3" class:has-text-primary={$blackTimer.isActive}
             >{dayjs($blackTimer.leftTime).format('mm:ss')}</span
           >
         </div>

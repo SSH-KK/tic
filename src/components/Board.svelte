@@ -11,6 +11,7 @@
   const size = 1500
   const WHITE_COLOR = '#F0F0F0'
   const BLACK_COLOR = '#212529'
+  const DANGER_COLOR = '#ff0000'
   const ACCENT_COLOR = '#20E7C1'
   const boardSize = 13
   const cellSize = size / (boardSize + 1)
@@ -171,6 +172,27 @@
       ctx.arc(x, y, cellSize / 2.5, 0, 2 * Math.PI)
       ctx.stroke()
     }
+    state.powers.forEach((row, ridx) =>
+      row.forEach((col, cidx) => {
+        if (col === 0) return
+        if (col === 1) {
+          const x = (cidx + 1) * cellSize
+          const y = (ridx + 1) * cellSize
+          ctx.fillStyle = DANGER_COLOR
+          ctx.beginPath()
+          ctx.moveTo(
+            x - (Math.cos(Math.PI / 6) * cellSize) / 2.3,
+            y + cellSize / 4,
+          )
+          ctx.lineTo(
+            x + (Math.cos(Math.PI / 6) * cellSize) / 2.3,
+            y + cellSize / 4,
+          )
+          ctx.lineTo(x, y - cellSize / 2.3)
+          ctx.fill()
+        }
+      }),
+    )
   }
 
   mousePos.subscribe(draw)
