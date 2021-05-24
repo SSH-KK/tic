@@ -18,9 +18,14 @@
   import { pass, resign } from '../store/game/action'
   import { selectedCoords, selectedApi } from '../store/game/ui'
   import { bestMove, bestMoveFx } from '../store/game/hints/bestMove'
+  import { bestQuarter, bestQuarterFx } from '../store/game/hints/bestQuarter'
+  import { heatmap, heatmapFx } from '../store/game/hints/heatmap'
+
   import { boardApi } from '../store/game/board'
 
   const bestMoveFxPending = bestMoveFx.pending
+  const bestQuarterFxPending = bestQuarterFx.pending
+  const heatmapFxPending = heatmapFx.pending
 </script>
 
 {#if $gameStatus === GameStatus.notStarted}
@@ -111,16 +116,32 @@
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
-                  on:click={() => bestMove()}
-                  disabled={$bestMoveFxPending}
+                  class:has-text-grey={$bestMoveFxPending}
+                  on:click={() => {
+                    if (!$bestMoveFxPending) bestMove()
+                  }}
                 >
                   Best move
                 </a>
                 <!-- svelte-ignore a11y-missing-attribute -->
-                <a class="dropdown-item"> Best quarter </a>
+                <a
+                  class="dropdown-item"
+                  class:has-text-grey={$selectedCoords.size ||
+                    $bestQuarterFxPending}
+                  on:click={() => {
+                    if (!$selectedCoords.size && !$bestQuarterFxPending)
+                      bestQuarter()
+                  }}>Best quarter</a
+                >
                 <hr class="dropdown-divider" />
                 <!-- svelte-ignore a11y-missing-attribute -->
-                <a class="dropdown-item"> Heatmap </a>
+                <a
+                  class="dropdown-item"
+                  class:has-text-grey={$heatmapFxPending}
+                  on:click={() => {
+                    if (!$heatmapFxPending) heatmap()
+                  }}>Heatmap</a
+                >
               </div>
             </div>
           </div>

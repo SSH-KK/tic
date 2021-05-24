@@ -38,6 +38,7 @@ export const bestMoveFx = createEffect(
         coords: [Coord.parse(json.hint[0].move)],
         type: 'single',
         heatmap: null,
+        price: 3,
       } as LeelaHint
     } else {
       const url = new URL(`${BACKEND_URL}/hints/show-best`)
@@ -60,6 +61,7 @@ export const bestMoveFx = createEffect(
         coords: [Coord.parse(json.hint)],
         type: 'single',
         heatmap: null,
+        price: 2,
       } as LeelaHint
     }
   },

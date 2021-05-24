@@ -8,14 +8,14 @@
   import { move } from '../store/game/action'
   import { notificationApi } from '../store/notification'
   import { selectedApi, selectedCoords } from '../store/game/ui'
+  import { BOARD_SIZE } from '../config'
 
   const size = 1500
   const WHITE_COLOR = '#F0F0F0'
   const BLACK_COLOR = '#212529'
   const DANGER_COLOR = '#ff0000'
   const ACCENT_COLOR = '#20E7C1'
-  const boardSize = 13
-  const cellSize = size / (boardSize + 1)
+  const cellSize = size / (BOARD_SIZE + 1)
 
   const selected = derived(selectedCoords, state =>
     Array.from(state).map(coord => Coord.parse(coord)),
@@ -39,10 +39,10 @@
     const dx = (event.clientX - rect.left) * (1500 / rect.width)
     const dy = (event.clientY - rect.top) * (1500 / rect.height)
     let mpos: [number, number]
-    Array(13)
+    Array(BOARD_SIZE)
       .fill(0)
       .forEach((_, ridx) => {
-        Array(13)
+        Array(BOARD_SIZE)
           .fill(0)
           .forEach((_, cidx) => {
             if (
@@ -72,7 +72,7 @@
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.beginPath()
-    for (let i = 1; i <= boardSize; i++) {
+    for (let i = 1; i <= BOARD_SIZE; i++) {
       ctx.moveTo(i * cellSize, cellSize)
       ctx.lineTo(i * cellSize, size - cellSize)
       ctx.moveTo(cellSize, i * cellSize)
@@ -89,7 +89,7 @@
     ctx.beginPath()
     ctx.arc(4 * cellSize, 4 * cellSize, cellSize / 8, 0, 2 * Math.PI)
     ctx.arc(
-      Math.ceil(boardSize / 2) * cellSize,
+      Math.ceil(BOARD_SIZE / 2) * cellSize,
       4 * cellSize,
       cellSize / 8,
       0,
@@ -100,21 +100,21 @@
     ctx.beginPath()
     ctx.arc(
       4 * cellSize,
-      Math.ceil(boardSize / 2) * cellSize,
+      Math.ceil(BOARD_SIZE / 2) * cellSize,
       cellSize / 8,
       0,
       2 * Math.PI,
     )
     ctx.arc(
-      Math.ceil(boardSize / 2) * cellSize,
-      Math.ceil(boardSize / 2) * cellSize,
+      Math.ceil(BOARD_SIZE / 2) * cellSize,
+      Math.ceil(BOARD_SIZE / 2) * cellSize,
       cellSize / 8,
       0,
       2 * Math.PI,
     )
     ctx.arc(
       size - 4 * cellSize,
-      Math.ceil(boardSize / 2) * cellSize,
+      Math.ceil(BOARD_SIZE / 2) * cellSize,
       cellSize / 8,
       0,
       2 * Math.PI,
@@ -123,7 +123,7 @@
     ctx.beginPath()
     ctx.arc(4 * cellSize, size - 4 * cellSize, cellSize / 8, 0, 2 * Math.PI)
     ctx.arc(
-      Math.ceil(boardSize / 2) * cellSize,
+      Math.ceil(BOARD_SIZE / 2) * cellSize,
       size - 4 * cellSize,
       cellSize / 8,
       0,
@@ -213,6 +213,40 @@
           ctx.arc(x, y, cellSize / 2.8, 0, 2 * Math.PI)
           ctx.stroke()
           break
+        case 'heatmap':
+          const k = Math.log(
+            hint.heatmap.reduce((prev, row) => {
+              const rowk = row.reduce(
+                (prev, val) => (val > prev ? val : prev),
+                0,
+              )
+              return rowk > prev ? rowk : prev
+            }, 0),
+          )
+          hint.heatmap.forEach((row, ridx) =>
+            row.forEach((val, cidx) => {
+              if (val === 0) return
+              val = Math.log(val) / k
+              const x = (cidx + 1) * cellSize
+              const y = (ridx + 1) * cellSize
+              ctx.globalAlpha = 0.7
+              const gradient = ctx.createRadialGradient(
+                x,
+                y,
+                (cellSize / 4) * val,
+                x,
+                y,
+                (cellSize / 2) * val,
+              )
+              gradient.addColorStop(1, '#20E7C1')
+              gradient.addColorStop(0, '#9FE7DA')
+              ctx.fillStyle = gradient
+              ctx.beginPath()
+              ctx.arc(x, y, (cellSize / 2) * val, 0, 2 * Math.PI)
+              ctx.fill()
+              ctx.globalAlpha = 1
+            }),
+          )
         default:
           break
       }

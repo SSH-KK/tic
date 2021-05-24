@@ -1,3 +1,5 @@
+import { BOARD_SIZE } from '../config'
+
 export const alphabet = 'abcdefghjklmnopqrst'.toUpperCase()
 
 export class Coord {
@@ -10,7 +12,7 @@ export class Coord {
   }
 
   toString(): string {
-    return `${alphabet[this.x]}${13 - this.y}`
+    return `${alphabet[this.x]}${BOARD_SIZE - this.y}`
   }
 
   static parse(coord: string): Coord {
@@ -19,6 +21,6 @@ export class Coord {
     if (x === -1 || y === NaN) {
       throw new Error(`Invalid coord ${coord}`)
     }
-    return new Coord(x, 13 - y)
+    return new Coord(x, BOARD_SIZE - y)
   }
 }

@@ -5,6 +5,7 @@ import { calculatePowers } from '../../helpers/groupPower'
 
 import { endGame } from './end'
 import { initGame } from './summary'
+import { BOARD_SIZE } from '../../config'
 
 export type Place = -1 | 0 | 1
 
@@ -12,6 +13,7 @@ export type LeelaHint = {
   type: 'single' | 'heatmap' | 'sequence'
   heatmap: number[][] | null
   coords: Coord[]
+  price: number
 }
 
 export type Board = {
@@ -26,15 +28,15 @@ type NewMove = {
   place: Coord
 }
 
-function _generateCells(size: number): Place[][] {
-  return new Array(13).fill(0).map(() => new Array(13).fill(0))
+function _generateCells(): Place[][] {
+  return new Array(BOARD_SIZE).fill(0).map(() => new Array(BOARD_SIZE).fill(0))
 }
 
 export const board = createStore<Board | null>(null)
   .on(initGame, () => ({
-    cells: _generateCells(13),
+    cells: _generateCells(),
     lastPlace: null,
-    powers: _generateCells(13),
+    powers: _generateCells(),
     leelaHints: [],
   }))
   .on(endGame, () => null)
