@@ -5,6 +5,7 @@ import { notificationApi } from '../notification'
 
 export const updateCurrentGameFx = createEffect(
   async ({ token }: { token: string }) => {
+    if (!token) return false
     const url = new URL(`${BACKEND_URL}/game/current`)
     url.search = new URLSearchParams({ token }).toString()
     let resp: Response
