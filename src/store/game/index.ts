@@ -22,6 +22,8 @@ import { gameState, locking } from './state'
 
 import { blackTimer, whiteTimer } from './timers'
 
+import { statusbar } from './statusbar'
+
 export {
   createClosedGame,
   createGameWithBot,
@@ -53,3 +55,5 @@ export { gameState, locking }
 export { gameSummary }
 
 export { blackTimer, whiteTimer }
+
+export { statusbar }

@@ -1,11 +1,12 @@
 <script lang="ts">
-  export let value: number = 0.5
+  import { statusbar } from '../store/game'
 
   let inner: HTMLElement
 
-  $: {
-    if (inner) inner.style.height = `calc(${value * 100}% - 0.5rem)`
-  }
+  statusbar.watch(state => {
+    if (!inner) return
+    inner.style.height = `calc(${state * 100}% - 0.5rem)`
+  })
 </script>
 
 <div class="background">

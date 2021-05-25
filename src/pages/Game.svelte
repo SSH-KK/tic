@@ -34,6 +34,8 @@
   const bestMoveFxPending = bestMoveFx.pending
   const bestQuarterFxPending = bestQuarterFx.pending
   const heatmapFxPending = heatmapFx.pending
+
+  let showStatusbar = true
 </script>
 
 {#if $gameStatus === GameStatus.notStarted}
@@ -88,6 +90,13 @@
                 >
                   {$showTerritory ? 'Hide' : 'Show'} territory
                 </a>
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a
+                  class="dropdown-item"
+                  on:click={() => (showStatusbar = !showStatusbar)}
+                >
+                  {showStatusbar ? 'Hide' : 'Show'} statusbar
+                </a>
               </div>
             </div>
           </div>
@@ -106,7 +115,9 @@
         </div>
       </div>
     </div>
-    <Statusbar value={Math.random()} />
+    {#if showStatusbar}
+      <Statusbar />
+    {/if}
     <div class="board-wrapper">
       <Board />
     </div>
