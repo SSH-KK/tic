@@ -23,6 +23,10 @@ export const registerHint = ({ clock, target }: HintSampleParam) => {
     to: selectedApi.clear,
   })
 
+  target.doneData.watch(hint =>
+    notificationApi.pushSuccess(`Used hint with price ${hint.price}`),
+  )
+
   sample({
     clock,
     target,
