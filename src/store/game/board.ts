@@ -1,4 +1,4 @@
-import { createApi, createEffect, createStore, forward } from 'effector'
+import { createApi, createEffect, createStore } from 'effector'
 import type { Coord } from '../../types/coord'
 
 import { calculatePowers } from '../../helpers/groupPower'
@@ -7,11 +7,12 @@ import { getProbabilityMap } from '../../helpers/deadstones'
 import { endGame } from './end'
 import { initGame } from './summary'
 import { BOARD_SIZE } from '../../config'
+import { move } from './action'
 
 export type Color = -1 | 0 | 1
 
 export type LeelaHint = {
-  type: 'single' | 'heatmap' | 'sequence'
+  type: 'single' | 'heatmap'
   heatmap: number[][] | null
   coords: Coord[]
   price: number
@@ -23,6 +24,7 @@ export type Board = {
   powers: number[][]
   leelaHints: LeelaHint[]
   probabilityMap: number[][]
+  showProbabilityMap: boolean
 }
 
 type NewMove = {
@@ -45,6 +47,8 @@ export const board = createStore<Board | null>(null)
     powers: _generateCells(),
     leelaHints: [],
     probabilityMap: _generateCells(),
+    future: null,
+    showProbabilityMap: true,
   }))
   .on(endGame, () => null)
   .on(probabilityMapFx.doneData, (state, probabilityMap) => ({
@@ -80,4 +84,11 @@ export const boardApi = createApi(board, {
     leelaHints: [...state.leelaHints, hint],
   }),
   clearLeelaHints: state => ({ ...state, leelaHints: [] }),
+  toggleShowProbabilityMap: state => ({
+    ...state,
+    showProbabilityMap: !state.showProbabilityMap,
+  }),
+  makeMove: (_, coord: Coord) => {
+    move(coord)
+  },
 })

@@ -15,7 +15,7 @@ import {
 import { gameStatus, GameStatus } from './status'
 import { updateCurrentGameFx, currentGame } from './current'
 import { auth } from '../auth'
-import { board, Board } from './board'
+import { board, boardApi, Board } from './board'
 import { gameSummary } from './summary'
 
 import { gameState, locking } from './state'
@@ -47,7 +47,7 @@ export { updateCurrentGameFx, currentGame }
 
 attachedToken()
 
-export { board }
+export { board, boardApi }
 export type { Board }
 
 export { gameState, locking }

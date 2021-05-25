@@ -23,8 +23,3 @@ forward({
   from: [initGame, endGame],
   to: selectedApi.clear,
 })
-
-export const showTerritory = createStore(true)
-export const showTerritoryApi = createApi(showTerritory, {
-  toggle: state => !state,
-})

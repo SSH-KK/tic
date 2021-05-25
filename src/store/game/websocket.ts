@@ -26,7 +26,12 @@ let gameId: number | null = null
 auth.watch(val => (token = val))
 
 function wsSend(m: any, code: number = 7) {
-  ws.send(JSON.stringify([code, 'go/game', m]))
+  try {
+    ws.send(JSON.stringify([code, 'go/game', m]))
+  } catch (e) {
+    notificationApi.pushError(e.toString())
+    throw e
+  }
 }
 
 ws.addEventListener('open', () => {
@@ -86,6 +91,9 @@ sample({
 
 ws.addEventListener('message', event => {
   const data = JSON.parse(event.data)
+  if (data[0] === 4) {
+    data.error = data[3]
+  }
   if (data.error) {
     const text = data.error as string
     notificationApi.pushError(`${text[0].toUpperCase()}${text.slice(1)}`)
@@ -126,6 +134,8 @@ ws.addEventListener('message', event => {
     })
     if (payload.turn[0] !== payload.player) {
       lockingApi.lock()
+    } else {
+      lockingApi.unlock()
     }
   } else if (type === 'newTurn') {
     const currentMap = payload.currentMap as Color[][]

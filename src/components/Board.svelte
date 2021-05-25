@@ -7,7 +7,7 @@
   import { board, locking } from '../store/game'
   import { move } from '../store/game/action'
   import { notificationApi } from '../store/notification'
-  import { selectedApi, selectedCoords, showTerritory } from '../store/game/ui'
+  import { selectedApi, selectedCoords } from '../store/game/ui'
   import { BOARD_SIZE } from '../config'
 
   const size = 1500
@@ -32,9 +32,9 @@
     ctx = canvas.getContext('2d')
 
     board.watch(draw)
+
     mousePos.subscribe(draw)
     selected.subscribe(draw)
-    showTerritory.watch(draw)
 
     notificationApi.clear()
   })
@@ -174,7 +174,7 @@
       }),
     )
 
-    if ($showTerritory) {
+    if (state.showProbabilityMap) {
       state.probabilityMap.forEach((row, ridx) =>
         row.forEach((val, cidx) => {
           if (val === 0) return

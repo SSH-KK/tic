@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Navigate } from 'svelte-router-spa'
   import dayjs from 'dayjs'
+  import mousetrap from 'svelte-use-mousetrap'
   import { CaretUp } from 'svelte-bootstrap-icons/lib/CaretUp'
   import { CaretDown } from 'svelte-bootstrap-icons/lib/CaretDown'
   import { Gear } from 'svelte-bootstrap-icons/lib/Gear'
@@ -16,26 +17,34 @@
     whiteTimer,
     locking,
     board,
+    boardApi,
   } from '../store/game'
   import { pass, resign } from '../store/game/action'
-  import {
-    selectedCoords,
-    selectedApi,
-    showTerritory,
-    showTerritoryApi,
-  } from '../store/game/ui'
+  import { selectedCoords, selectedApi } from '../store/game/ui'
   import { bestMove, bestMoveFx } from '../store/game/hints/bestMove'
   import { bestQuarter, bestQuarterFx } from '../store/game/hints/bestQuarter'
   import { heatmap, heatmapFx } from '../store/game/hints/heatmap'
 
-  import { boardApi } from '../store/game/board'
   import Statusbar from '../components/Statusbar.svelte'
+  import { notificationApi } from '../store/notification'
 
   const bestMoveFxPending = bestMoveFx.pending
   const bestQuarterFxPending = bestQuarterFx.pending
   const heatmapFxPending = heatmapFx.pending
 
   let showStatusbar = true
+
+  function bestQuarterHandler() {
+    if (!$selectedCoords.size && !$bestQuarterFxPending) bestQuarter()
+  }
+
+  function heatmapHandler() {
+    if (!$heatmapFxPending) heatmap()
+  }
+
+  function bestMoveHandler() {
+    if (!$bestMoveFxPending) bestMove()
+  }
 </script>
 
 {#if $gameStatus === GameStatus.notStarted}
@@ -62,7 +71,20 @@
     </div>
   </div>
 {:else if $gameStatus === GameStatus.running}
-  <div class="wrapper">
+  <div
+    use:mousetrap={[
+      [['q'], bestMoveHandler],
+      [['w'], bestQuarterHandler],
+      [['e'], heatmapHandler],
+      [['u'], boardApi.toggleShowProbabilityMap],
+      [['i'], () => (showStatusbar = !showStatusbar)],
+      [['a'], boardApi.clearLeelaHints],
+      [['s'], selectedApi.clear],
+      [['d'], notificationApi.clear],
+      [['p'], pass],
+    ]}
+    class="wrapper"
+  >
     <div class="level mb-0">
       <div class="level-left">
         <div class="level-item">
@@ -86,16 +108,16 @@
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
-                  on:click={() => showTerritoryApi.toggle()}
+                  on:click={() => boardApi.toggleShowProbabilityMap()}
                 >
-                  {$showTerritory ? 'Hide' : 'Show'} territory
+                  {$board.showProbabilityMap ? 'Hide' : 'Show'} territory (U)
                 </a>
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
                   on:click={() => (showStatusbar = !showStatusbar)}
                 >
-                  {showStatusbar ? 'Hide' : 'Show'} statusbar
+                  {showStatusbar ? 'Hide' : 'Show'} statusbar (I)
                 </a>
               </div>
             </div>
@@ -133,14 +155,14 @@
         {#if $board.leelaHints.length}
           <div class="level-item">
             <button class="button" on:click={() => boardApi.clearLeelaHints()}
-              >Clear hints</button
+              >Clear hints (A)</button
             >
           </div>
         {/if}
         {#if $selectedCoords.size}
           <div class="level-item">
             <button class="button" on:click={() => selectedApi.clear()}
-              >Clear selection</button
+              >Clear selection (S)</button
             >
           </div>
         {/if}
@@ -161,30 +183,23 @@
                 <a
                   class="dropdown-item"
                   class:has-text-grey={$bestMoveFxPending}
-                  on:click={() => {
-                    if (!$bestMoveFxPending) bestMove()
-                  }}
+                  on:click={bestMoveHandler}
                 >
-                  Best move
+                  Best move (Q)
                 </a>
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
                   class:has-text-grey={$selectedCoords.size ||
                     $bestQuarterFxPending}
-                  on:click={() => {
-                    if (!$selectedCoords.size && !$bestQuarterFxPending)
-                      bestQuarter()
-                  }}>Best quarter</a
+                  on:click={bestQuarterHandler}>Best quarter (W)</a
                 >
                 <hr class="dropdown-divider" />
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
                   class:has-text-grey={$heatmapFxPending}
-                  on:click={() => {
-                    if (!$heatmapFxPending) heatmap()
-                  }}>Heatmap</a
+                  on:click={heatmapHandler}>Heatmap (E)</a
                 >
               </div>
             </div>
@@ -201,7 +216,7 @@
           <button
             disabled={$locking}
             class="button is-warning is-outlined"
-            on:click={() => pass()}>Pass</button
+            on:click={() => pass()}>Pass (P)</button
           >
         </div>
       </div>
