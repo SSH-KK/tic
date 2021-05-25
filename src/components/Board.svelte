@@ -7,7 +7,7 @@
   import { board, locking } from '../store/game'
   import { move } from '../store/game/action'
   import { notificationApi } from '../store/notification'
-  import { selectedApi, selectedCoords } from '../store/game/ui'
+  import { selectedApi, selectedCoords, showTerritory } from '../store/game/ui'
   import { BOARD_SIZE } from '../config'
 
   const size = 1500
@@ -30,7 +30,12 @@
 
   onMount(() => {
     ctx = canvas.getContext('2d')
+
     board.watch(draw)
+    mousePos.subscribe(draw)
+    selected.subscribe(draw)
+    showTerritory.watch(draw)
+
     notificationApi.clear()
   })
 
@@ -169,28 +174,30 @@
       }),
     )
 
-    state.probabilityMap.forEach((row, ridx) =>
-      row.forEach((val, cidx) => {
-        if (val === 0) return
-        val *= 0.8
-        const x = (cidx + 1) * cellSize
-        const y = (ridx + 1) * cellSize
-        ctx.fillStyle = val < 0 ? WHITE_COLOR : BLACK_COLOR
-        ctx.strokeStyle = val > 0 ? WHITE_COLOR : BLACK_COLOR
-        ctx.fillRect(
-          x - (Math.abs(val) * cellSize) / 2,
-          y - (Math.abs(val) * cellSize) / 2,
-          Math.abs(val) * cellSize,
-          Math.abs(val) * cellSize,
-        )
-        ctx.strokeRect(
-          x - (Math.abs(val) * cellSize) / 2,
-          y - (Math.abs(val) * cellSize) / 2,
-          Math.abs(val) * cellSize,
-          Math.abs(val) * cellSize,
-        )
-      }),
-    )
+    if ($showTerritory) {
+      state.probabilityMap.forEach((row, ridx) =>
+        row.forEach((val, cidx) => {
+          if (val === 0) return
+          val *= 0.8
+          const x = (cidx + 1) * cellSize
+          const y = (ridx + 1) * cellSize
+          ctx.fillStyle = val < 0 ? WHITE_COLOR : BLACK_COLOR
+          ctx.strokeStyle = val > 0 ? WHITE_COLOR : BLACK_COLOR
+          ctx.fillRect(
+            x - (Math.abs(val) * cellSize) / 2,
+            y - (Math.abs(val) * cellSize) / 2,
+            Math.abs(val) * cellSize,
+            Math.abs(val) * cellSize,
+          )
+          ctx.strokeRect(
+            x - (Math.abs(val) * cellSize) / 2,
+            y - (Math.abs(val) * cellSize) / 2,
+            Math.abs(val) * cellSize,
+            Math.abs(val) * cellSize,
+          )
+        }),
+      )
+    }
 
     if (state.lastPlace) {
       const x = (state.lastPlace.x + 1) * cellSize
@@ -288,9 +295,6 @@
       ctx.stroke()
     })
   }
-
-  mousePos.subscribe(draw)
-  selected.subscribe(draw)
 
   function mousemoveHandler(event: MouseEvent) {
     if ($locking) {

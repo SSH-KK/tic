@@ -2,6 +2,8 @@
   import { Navigate } from 'svelte-router-spa'
   import dayjs from 'dayjs'
   import { CaretUp } from 'svelte-bootstrap-icons/lib/CaretUp'
+  import { CaretDown } from 'svelte-bootstrap-icons/lib/CaretDown'
+  import { Gear } from 'svelte-bootstrap-icons/lib/Gear'
   import { Controller } from 'svelte-bootstrap-icons/lib/Controller'
 
   import Board from '../components/Board.svelte'
@@ -16,7 +18,12 @@
     board,
   } from '../store/game'
   import { pass, resign } from '../store/game/action'
-  import { selectedCoords, selectedApi } from '../store/game/ui'
+  import {
+    selectedCoords,
+    selectedApi,
+    showTerritory,
+    showTerritoryApi,
+  } from '../store/game/ui'
   import { bestMove, bestMoveFx } from '../store/game/hints/bestMove'
   import { bestQuarter, bestQuarterFx } from '../store/game/hints/bestQuarter'
   import { heatmap, heatmapFx } from '../store/game/hints/heatmap'
@@ -64,7 +71,31 @@
       </div>
       <div class="level-right">
         <div class="level-item">
-          <span class="is-size-3" class:has-text-primary={$whiteTimer.isActive}
+          <div class="dropdown is-right is-hoverable">
+            <div class="dropdown-trigger">
+              <button class="button">
+                <span class="icon is-small"><Gear /></span>
+                Settings
+                <span class="icon is-small"><CaretDown /></span>
+              </button>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <a
+                  class="dropdown-item"
+                  on:click={() => showTerritoryApi.toggle()}
+                >
+                  {$showTerritory ? 'Hide' : 'Show'} territory
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="level-item">
+          <span
+            class="is-size-3 timer"
+            class:has-text-primary={$whiteTimer.isActive}
             >{dayjs($whiteTimer.leftTime).format('mm:ss')}</span
           >
         </div>
