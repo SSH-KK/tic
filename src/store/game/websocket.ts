@@ -4,7 +4,7 @@ import { get } from 'svelte/store'
 import { WEBSOCKET_URL } from '../../config'
 import type { User } from '../../types/user'
 
-import { Place, boardApi, board } from './board'
+import { Color, boardApi, board } from './board'
 import { auth } from '../auth'
 import { gameRequestFx } from './start'
 import { setWaiting, gameStatus, GameStatus } from './status'
@@ -116,7 +116,7 @@ ws.addEventListener('message', event => {
       selfColor: selfColor,
       gameId,
     })
-    const currentMap = payload.currentMap as Place[][]
+    const currentMap = payload.currentMap as Color[][]
     boardApi.setCells(rotateAntiClockwise(currentMap))
     timersApi.set({
       blackEnd: payload.turnBlackEndedAt,
@@ -128,7 +128,7 @@ ws.addEventListener('message', event => {
       lockingApi.lock()
     }
   } else if (type === 'newTurn') {
-    const currentMap = payload.currentMap as Place[][]
+    const currentMap = payload.currentMap as Color[][]
     if (payload.moveType !== 'pass') {
       boardApi.newMove({
         cells: rotateAntiClockwise(currentMap),
