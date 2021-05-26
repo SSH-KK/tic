@@ -27,23 +27,25 @@
 
   import Statusbar from '../components/Statusbar.svelte'
   import { notificationApi } from '../store/notification'
+  import { derived } from 'svelte/store'
 
-  const bestMoveFxPending = bestMoveFx.pending
-  const bestQuarterFxPending = bestQuarterFx.pending
-  const heatmapFxPending = heatmapFx.pending
+  const hintPending = derived(
+    [bestMoveFx.pending, bestQuarterFx.pending, heatmapFx.pending],
+    values => values.filter(val => val).length > 0,
+  )
 
   let showStatusbar = true
 
   function bestQuarterHandler() {
-    if (!$selectedCoords.size && !$bestQuarterFxPending) bestQuarter()
+    if (!$selectedCoords.size && !$hintPending) bestQuarter()
   }
 
   function heatmapHandler() {
-    if (!$heatmapFxPending) heatmap()
+    if (!$hintPending) heatmap()
   }
 
   function bestMoveHandler() {
-    if (!$bestMoveFxPending) bestMove()
+    if (!$hintPending) bestMove()
   }
 </script>
 
@@ -63,10 +65,12 @@
 {:else if $gameStatus === GameStatus.waiting}
   <div class="mt-3 columns is-centered">
     <div class="is-half column">
-      <div
-        class="notification is-info is-flex is-align-items-center is-flex-direction-column"
-      >
+      <div class="notification is-info">
         <span class="is-size-3">Waiting game</span>
+        <button
+          class="button is-primary is-pulled-right is-medium"
+          on:click={() => resign()}>Cancel</button
+        >
       </div>
     </div>
   </div>
@@ -80,8 +84,10 @@
       [['i'], () => (showStatusbar = !showStatusbar)],
       [['a'], boardApi.clearLeelaHints],
       [['s'], selectedApi.clear],
-      [['d'], notificationApi.clear],
+      [['d'], notificationApi.removeLast],
+      [['D'], notificationApi.clear],
       [['p'], pass],
+      [['g'], boardApi.useHint],
     ]}
     class="wrapper"
   >
@@ -169,7 +175,7 @@
         <div class="level-item">
           <div class="dropdown is-up is-right is-hoverable">
             <div class="dropdown-trigger">
-              <button class="button">
+              <button class="button" class:is-loading={$hintPending}>
                 <span class="icon is-small"><Controller /></span>
                 Leela
                 <span class="icon is-small">
@@ -182,7 +188,7 @@
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
-                  class:has-text-grey={$bestMoveFxPending}
+                  class:has-text-grey={$hintPending}
                   on:click={bestMoveHandler}
                 >
                   Best move (Q)
@@ -190,15 +196,14 @@
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
-                  class:has-text-grey={$selectedCoords.size ||
-                    $bestQuarterFxPending}
+                  class:has-text-grey={$selectedCoords.size || $hintPending}
                   on:click={bestQuarterHandler}>Best quarter (W)</a
                 >
                 <hr class="dropdown-divider" />
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
-                  class:has-text-grey={$heatmapFxPending}
+                  class:has-text-grey={$hintPending}
                   on:click={heatmapHandler}>Heatmap (E)</a
                 >
               </div>

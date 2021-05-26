@@ -72,9 +72,18 @@ export const boardApi = createApi(board, {
   },
   newMove: (state, { cells, place }: NewMove) => {
     probabilityMapFx(cells)
+    let leelaHints = state.leelaHints
+    const lastHint = leelaHints.slice(-1)[0]
+    if (lastHint && lastHint.type === 'single') {
+      const hint = lastHint.coords[0]
+      if (hint.x === place.x && hint.y === place.y) {
+        leelaHints = leelaHints.slice(0, -1)
+      }
+    }
     return {
       ...state,
       cells,
+      leelaHints,
       lastPlace: place,
       powers: calculatePowers(cells),
     }
@@ -90,5 +99,12 @@ export const boardApi = createApi(board, {
   }),
   makeMove: (_, coord: Coord) => {
     move(coord)
+  },
+  useHint: state => {
+    const lastHint = state.leelaHints.slice(-1)[0]
+    if (lastHint && lastHint.type === 'single') {
+      const hint = lastHint.coords[0]
+      boardApi.makeMove(hint)
+    }
   },
 })

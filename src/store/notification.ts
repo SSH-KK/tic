@@ -25,4 +25,5 @@ export const notificationApi = createApi(notifications, {
     ...val.slice(0, pos),
     ...val.slice(pos + 1),
   ],
+  removeLast: state => state.slice(0, -1),
 })
