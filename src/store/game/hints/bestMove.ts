@@ -34,8 +34,12 @@ export const bestMoveFx = createEffect(
       if (json.hint.length === 0) {
         throw new Error('Invalid Leela answer')
       }
+      const move = json.hint[0].move
+      if (move === 'pass' || move === 'resign') {
+        throw new Error(`You should ${move}...`)
+      }
       return {
-        coords: [Coord.parse(json.hint[0].move)],
+        coords: [Coord.parse(move)],
         type: 'single',
         heatmap: null,
         price: 3,
@@ -54,7 +58,7 @@ export const bestMoveFx = createEffect(
         throw new Error(`Invalid status ${resp.status}`)
       }
       const json = await resp.json()
-      if (json.hint === '') {
+      if (!json.hint) {
         throw new Error('Invalid Leela answer')
       }
       return {
