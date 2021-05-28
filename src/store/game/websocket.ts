@@ -169,7 +169,7 @@ ws.addEventListener('message', event => {
         hintScore: payload.winnerPlayer.hintScore,
         rpScore: payload.winnerPlayer.rpScore,
       },
-      winnerColor: payload.winner === 'w' ? 'white' : 'black',
+      winnerColor: payload.winner.toLowerCase() === 'w' ? 'white' : 'black',
     })
     gameId = null
   }

@@ -1,4 +1,4 @@
-import { createEvent } from 'effector'
+import { createEvent, restore } from 'effector'
 import { navigateTo } from 'svelte-router-spa'
 import type { User } from '../../types/user'
 
@@ -20,5 +20,6 @@ type EndGame = {
 }
 
 export const endGame = createEvent<EndGame>()
+export const endResult = restore(endGame, null)
 
 endGame.watch(() => navigateTo('/end'))

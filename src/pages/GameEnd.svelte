@@ -1,20 +1,39 @@
 <script lang="ts">
   import { Navigate } from 'svelte-router-spa'
+  import PlayerResult from '../components/PlayerResult.svelte'
 
   import { gameStatus, GameStatus } from '../store/game'
+  import { endResult } from '../store/game/end'
 </script>
 
-{#if $gameStatus === GameStatus.ended}
-  <div class="columns is-centered">
-    <div class="column is-half">
-      <div class="notification">
-        <span class="is-size-3">Game end</span>
-        <Navigate to="/" styles="button is-primary is-pulled-right is-medium"
-          >Go Home</Navigate
-        >
-      </div>
+{#if $endResult}
+  <div class="columns">
+    <div class="column is-half has-text-centered has-text-weight-semibold">
+      <span class="title is-2">White</span>
+    </div>
+    <div class="column is-half has-text-centered has-text-weight-semibold">
+      <span class="title is-2">Black</span>
     </div>
   </div>
+  <div class="columns">
+    {#if $endResult.winnerColor === 'black'}
+      <div class="column is-half is-size-1 heading">Winner</div>
+    {/if}
+    <div class="column is-half">
+      <PlayerResult player={$endResult.winner} />
+    </div>
+    <div class="column is-half is-size-1 heading">Winner</div>
+  </div>
+  <div class="columns">
+    {#if $endResult.winnerColor === 'white'}
+      <div class="column is-half is-size-1 heading">Loser</div>
+    {/if}
+    <div class="column is-half">
+      <PlayerResult player={$endResult.loser} />
+    </div>
+    <div class="column is-half is-size-1 heading">Loser</div>
+  </div>
+  <Navigate to="/" styles="button is-primary is-fullwidth">Go home</Navigate>
 {:else}
   <div class="columns is-centered">
     <div class="column is-half">
@@ -43,3 +62,11 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+</style>

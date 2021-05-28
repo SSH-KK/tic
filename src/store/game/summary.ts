@@ -1,6 +1,6 @@
 import { createEvent, createStore } from 'effector'
 import type { User } from '../../types/user'
-import { endGame } from './end'
+import { endGame, endResult } from './end'
 
 type GameSummary = {
   white: User
@@ -14,3 +14,5 @@ export const initGame = createEvent<GameSummary>()
 export const gameSummary = createStore<GameSummary | null>(null)
   .on(endGame, () => null)
   .on(initGame, (_, summary) => summary)
+
+endResult.on(initGame, () => null)
