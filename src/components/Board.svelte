@@ -30,6 +30,8 @@
 
   onMount(() => {
     ctx = canvas.getContext('2d')
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
 
     board.watch(draw)
 
