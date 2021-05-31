@@ -152,6 +152,8 @@
     const state = $board
     const mpos = $mousePos
     if (state === null) return
+    const groups = state.groups
+
     state.cells.forEach((row, ridx) =>
       row.forEach((col, cidx) => {
         const x = (cidx + 1) * cellSize
@@ -165,10 +167,23 @@
           ctx.strokeStyle = col === 1 ? WHITE_COLOR : BLACK_COLOR
           ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
           ctx.stroke()
-        } else if (ridx === mpos.y && cidx === mpos.x) {
-          ctx.globalAlpha = 0.5
+          if (ridx === mpos.y && cidx === mpos.x) {
+            const group = groups.groups[groups.board[ridx][cidx]]
+            group.breathes.forEach(coord => {
+              const x = (coord.x + 1) * cellSize
+              const y = (coord.y + 1) * cellSize
+              ctx.globalAlpha = 0.1
+              ctx.beginPath()
+              ctx.fillStyle = WHITE_COLOR
+              ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
+              ctx.fill()
+              ctx.globalAlpha = 1
+            })
+          }
+        } else if (ridx === mpos.y && cidx === mpos.x && !$locking) {
+          ctx.globalAlpha = 0.3
           ctx.beginPath()
-          ctx.fillStyle = BLACK_COLOR
+          ctx.fillStyle = WHITE_COLOR
           ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
           ctx.fill()
           ctx.globalAlpha = 1
@@ -211,13 +226,11 @@
       ctx.fill()
     }
 
-    const groups = state.groups
     state.cells.forEach((row, ridx) =>
       row.forEach((col, cidx) => {
         if (col === 0) return
         const breathCount =
           groups.groups[groups.board[ridx][cidx]].breathes.length
-        console.log(breathCount, ridx, cidx)
         if (breathCount === 1) {
           const x = (cidx + 1) * cellSize
           const y = (ridx + 1) * cellSize
@@ -295,10 +308,6 @@
   }
 
   function mousemoveHandler(event: MouseEvent) {
-    if ($locking) {
-      if ($mousePos.x !== -1) mousePos.set({ x: -1, y: -1 })
-      return
-    }
     const mpos = event2xy(event)
     if (mpos) {
       if (mpos.x !== $mousePos.x || mpos.y !== $mousePos.y) mousePos.set(mpos)
