@@ -11,7 +11,7 @@ export const selectedCoords = createStore<Set<string>>(new Set())
 
 export const selectedApi = createApi(selectedCoords, {
   clear: () => new Set(),
-  toogle: (state, coord: Coord) => {
+  toggle: (state, coord: Coord) => {
     const key = coord.toString()
     if (state.has(key)) state.delete(key)
     else state.add(key)

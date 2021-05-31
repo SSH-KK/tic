@@ -15,6 +15,10 @@ export class Coord {
     return `${alphabet[this.x]}${BOARD_SIZE - this.y}`
   }
 
+  isEqual(other: Coord): boolean {
+    return other.x === this.x && other.y === this.y
+  }
+
   static parse(coord: string): Coord {
     const x = alphabet.indexOf(coord[0].toUpperCase())
     const y = parseInt(coord.slice(1))

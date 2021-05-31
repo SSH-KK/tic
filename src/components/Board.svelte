@@ -4,11 +4,12 @@
 
   import { alphabet, Coord } from '../types/coord'
 
-  import { board, locking } from '../store/game'
+  import { board, locking, gameSummary } from '../store/game'
   import { move } from '../store/game/action'
   import { notificationApi } from '../store/notification'
   import { selectedApi, selectedCoords } from '../store/game/ui'
   import { BOARD_SIZE } from '../config'
+  import { checkAkami } from '../helpers/checkAkami'
 
   const size = 1500
   const WHITE_COLOR = '#F0F0F0'
@@ -20,6 +21,7 @@
   const selected = derived(selectedCoords, state =>
     Array.from(state).map(coord => Coord.parse(coord)),
   )
+  const selfColor = derived(gameSummary, summary => summary.selfColor)
 
   let canvas: HTMLCanvasElement
   let ctx: CanvasRenderingContext2D
@@ -186,9 +188,14 @@
             })
           }
         } else if (ridx === mpos.y && cidx === mpos.x && !$locking) {
-          ctx.globalAlpha = 0.3
+          if ($selfColor === 'white') {
+            ctx.globalAlpha = 0.3
+            ctx.fillStyle = WHITE_COLOR
+          } else {
+            ctx.globalAlpha = 0.7
+            ctx.fillStyle = BLACK_COLOR
+          }
           ctx.beginPath()
-          ctx.fillStyle = WHITE_COLOR
           ctx.arc(x, y, cellSize / 2.1, 0, 2 * Math.PI)
           ctx.fill()
           ctx.globalAlpha = 1
@@ -324,6 +331,15 @@
     const mpos = event2xy(event)
     if (!mpos) return
     const coord = new Coord(mpos.x, mpos.y)
+    const isDanger = checkAkami($board.cells, coord, $selfColor)
+    const isSelected = $selected.some(val => val.isEqual(coord))
+    if (isDanger && !isSelected) {
+      notificationApi.pushError('This move in akami. Are you sure?')
+      selectedApi.toggle(coord)
+      return
+    } else if (isDanger && isSelected) {
+      selectedApi.toggle(coord)
+    }
     move(coord)
   }
 
@@ -331,7 +347,7 @@
     const mpos = event2xy(event)
     if (!mpos) return
     const coord = new Coord(mpos.x, mpos.y)
-    selectedApi.toogle(coord)
+    selectedApi.toggle(coord)
   }
 </script>
 
