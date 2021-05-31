@@ -1,8 +1,8 @@
 import { createApi, createEffect, createStore } from 'effector'
 import type { Coord } from '../../types/coord'
 
-import { calculatePowers } from '../../helpers/groupPower'
 import { getProbabilityMap } from '../../helpers/deadstones'
+import { asGroups, Groups } from '../../helpers/groups'
 
 import { endGame } from './end'
 import { initGame } from './summary'
@@ -21,7 +21,7 @@ export type LeelaHint = {
 export type Board = {
   cells: Color[][]
   lastPlace: Coord | null
-  powers: number[][]
+  groups: Groups
   leelaHints: LeelaHint[]
   probabilityMap: number[][]
   showProbabilityMap: boolean
@@ -32,8 +32,10 @@ type NewMove = {
   place: Coord
 }
 
-function _generateCells(): Color[][] {
-  return new Array(BOARD_SIZE).fill(0).map(() => new Array(BOARD_SIZE).fill(0))
+function _generateCells(val = 0): Color[][] {
+  return new Array(BOARD_SIZE)
+    .fill(0)
+    .map(() => new Array(BOARD_SIZE).fill(val))
 }
 
 export const probabilityMapFx = createEffect(
@@ -44,7 +46,10 @@ export const board = createStore<Board | null>(null)
   .on(initGame, () => ({
     cells: _generateCells(),
     lastPlace: null,
-    powers: _generateCells(),
+    groups: {
+      board: _generateCells(-1),
+      groups: [],
+    },
     leelaHints: [],
     probabilityMap: _generateCells(),
     future: null,
@@ -67,7 +72,7 @@ export const boardApi = createApi(board, {
     return {
       ...state,
       cells,
-      powers: calculatePowers(cells),
+      groups: asGroups(cells),
     }
   },
   newMove: (state, { cells, place }: NewMove) => {
@@ -85,7 +90,7 @@ export const boardApi = createApi(board, {
       cells,
       leelaHints,
       lastPlace: place,
-      powers: calculatePowers(cells),
+      groups: asGroups(cells),
     }
   },
   pushLeelaHint: (state, hint: LeelaHint) => ({

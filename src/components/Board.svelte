@@ -211,23 +211,19 @@
       ctx.fill()
     }
 
-    state.powers.forEach((row, ridx) =>
+    const groups = state.groups
+    state.cells.forEach((row, ridx) =>
       row.forEach((col, cidx) => {
         if (col === 0) return
-        if (col === 1) {
+        const breathCount =
+          groups.groups[groups.board[ridx][cidx]].breathes.length
+        console.log(breathCount, ridx, cidx)
+        if (breathCount === 1) {
           const x = (cidx + 1) * cellSize
           const y = (ridx + 1) * cellSize
           ctx.fillStyle = DANGER_COLOR
           ctx.beginPath()
-          ctx.moveTo(
-            x - (Math.cos(Math.PI / 6) * cellSize) / 2.3,
-            y + cellSize / 4,
-          )
-          ctx.lineTo(
-            x + (Math.cos(Math.PI / 6) * cellSize) / 2.3,
-            y + cellSize / 4,
-          )
-          ctx.lineTo(x, y - cellSize / 2.3)
+          ctx.arc(x, y, cellSize / 6, 0, 2 * Math.PI)
           ctx.fill()
         }
       }),
