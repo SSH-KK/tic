@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { derived, writable } from 'svelte/store'
 
   import { alphabet, Coord } from '../types/coord'
@@ -27,19 +27,24 @@
     x: -1,
     y: -1,
   })
+  let subscriptions: (() => void)[] = []
 
   onMount(() => {
     ctx = canvas.getContext('2d')
     ctx.imageSmoothingEnabled = true
     ctx.imageSmoothingQuality = 'high'
 
-    board.watch(draw)
+    subscriptions = [
+      board.watch(draw),
 
-    mousePos.subscribe(draw)
-    selected.subscribe(draw)
+      mousePos.subscribe(draw),
+      selected.subscribe(draw),
+    ]
 
     notificationApi.clear()
   })
+
+  onDestroy(() => subscriptions.forEach(fn => fn()))
 
   function event2xy(event: MouseEvent): { x: number; y: number } | null {
     const rect = canvas.getBoundingClientRect()
