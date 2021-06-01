@@ -206,7 +206,7 @@
     if (state.showProbabilityMap) {
       state.probabilityMap.forEach((row, ridx) =>
         row.forEach((val, cidx) => {
-          if (val === 0) return
+          if (val === 0 || state.cells[ridx][cidx] !== 0) return
           val *= 0.8
           const x = (cidx + 1) * cellSize
           const y = (ridx + 1) * cellSize
@@ -248,7 +248,15 @@
           const y = (ridx + 1) * cellSize
           ctx.fillStyle = DANGER_COLOR
           ctx.beginPath()
-          ctx.arc(x, y, cellSize / 6, 0, 2 * Math.PI)
+          ctx.moveTo(
+            x - (Math.cos(Math.PI / 6) * cellSize) / 4.6,
+            y + cellSize / 8,
+          )
+          ctx.lineTo(
+            x + (Math.cos(Math.PI / 6) * cellSize) / 4.6,
+            y + cellSize / 8,
+          )
+          ctx.lineTo(x, y - cellSize / 4.6)
           ctx.fill()
         }
       }),

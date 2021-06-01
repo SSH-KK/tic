@@ -24,6 +24,7 @@
     </div>
     <div class="column is-half is-size-1 heading">Winner</div>
   </div>
+  <hr />
   <div class="columns">
     {#if $endResult.winnerColor === 'white'}
       <div class="column is-half is-size-1 heading">Loser</div>
