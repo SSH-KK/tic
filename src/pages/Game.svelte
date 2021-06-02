@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Navigate } from 'svelte-router-spa'
+  import { Navigate, navigateTo } from 'svelte-router-spa'
   import dayjs from 'dayjs'
   import mousetrap from 'svelte-use-mousetrap'
   import { CaretUp } from 'svelte-bootstrap-icons/lib/CaretUp'
@@ -72,7 +72,10 @@
         <span class="is-size-3">{$t('game.wait')}</span>
         <button
           class="button is-primary is-pulled-right is-medium"
-          on:click={() => resign()}>{$t('cancel')}</button
+          on:click={() => {
+            resign()
+            navigateTo('/')
+          }}>{$t('cancel')}</button
         >
       </div>
     </div>
