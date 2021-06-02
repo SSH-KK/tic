@@ -1,0 +1,53 @@
+{
+  "black": "Black",
+  "white": "White",
+  "winner": "Winner",
+  "loser": "Loser",
+  "cancel": "Cancel",
+  "home": {
+    "resume": "Resume game",
+    "bot": "Play with bot",
+    "random": "Play with random player",
+    "create-closed": "Create closed game",
+    "connect-closed": "Connect to closed game"
+  },
+  "game": {
+    "nocurrent": "No current game",
+    "isrunning": "Game is running",
+    "gohome": "Go home",
+    "wait": "Waiting game",
+    "pass": "Pass",
+    "resign": "Resign",
+    "settings": {
+      "title": "Settings",
+      "hide": "Hide",
+      "show": "Show",
+      "territory": "territory",
+      "statusbar": "statusbar"
+    },
+    "hints": {
+      "title": "Leela",
+      "bestMove": "Best move",
+      "bestQuarter": "Best quarter",
+      "heatmap": "Heatmap"
+    },
+    "clear": {
+      "selection": "Clear selection",
+      "hints": "Clear hints"
+    },
+    "score": {
+      "final": "Final score",
+      "hint": "Hint score",
+      "rp": "RP score"
+    }
+  },
+  "logout": "Logout",
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Submit",
+    "nickname": "Nickname"
+  }
+}

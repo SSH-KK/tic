@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Navigate, navigateTo } from 'svelte-router-spa'
+  import { Navigate } from 'svelte-router-spa'
+  import { t } from 'svelte-i18n'
   import { Envelope } from 'svelte-bootstrap-icons/lib/Envelope'
   import { Key } from 'svelte-bootstrap-icons/lib/Key'
   import { createStore } from 'effector'
@@ -31,7 +32,7 @@
   {/if}
   <fieldset disabled={$disabled}>
     <div class="field">
-      <label for="email" class="label">Email</label>
+      <label for="email" class="label">{$t('auth.email')}</label>
       <div class="control has-icons-left">
         <input
           type="email"
@@ -48,7 +49,7 @@
     </div>
 
     <div class="field">
-      <label for="password" class="label">Password</label>
+      <label for="password" class="label">{$t('auth.password')}</label>
       <div class="control has-icons-left">
         <input
           type="password"
@@ -67,11 +68,12 @@
     <div class="field is-grouped is-grouped-right">
       <div class="control">
         <Navigate to="/register" styles="button is-link is-light"
-          >Register</Navigate
+          >{$t('auth.register')}</Navigate
         >
       </div>
       <div class="control">
-        <button class="button is-link" type="submit">Submit</button>
+        <button class="button is-link" type="submit">{$t('auth.submit')}</button
+        >
       </div>
     </div>
   </fieldset>

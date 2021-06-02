@@ -1,11 +1,17 @@
 <script lang="ts">
   import { Route, Navigate } from 'svelte-router-spa'
+  import { locale, t } from 'svelte-i18n'
   import Notifications from '../components/Notifications.svelte'
 
   import { logout } from '../store/auth'
   import { self } from '../store/self'
 
   export let currentRoute: any
+
+  function switchLocale() {
+    if ($locale === 'ru') locale.set('en')
+    else locale.set('ru')
+  }
 </script>
 
 <Notifications />
@@ -22,9 +28,11 @@
         <div class="navbar-end ">
           <div class="navbar-item">
             <div class="buttons">
-              <span class="button is-primary is-light">{$self.nickname}</span>
+              <button class="button is-primary is-light" on:click={switchLocale}
+                >{$self.nickname}</button
+              >
               <button class="button is-light" on:click={() => logout()}>
-                Logout
+                {$t('logout')}
               </button>
             </div>
           </div>

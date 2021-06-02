@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from 'svelte-i18n'
+
   import { notificationApi, notifications } from '../store/notification'
 </script>
 
@@ -6,7 +8,7 @@
   {#each $notifications as nt, i (i)}
     <div class="notification is-{nt.type}">
       <button class="delete" on:click={() => notificationApi.remove(i)} />
-      <span class="is-size-5">{nt.text}</span>
+      <span class="is-size-5">{$t(nt.text)}</span>
     </div>
   {/each}
 </div>

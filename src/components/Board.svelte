@@ -204,6 +204,7 @@
     )
 
     if (state.showProbabilityMap) {
+      ctx.globalAlpha = 0.7
       state.probabilityMap.forEach((row, ridx) =>
         row.forEach((val, cidx) => {
           if (val === 0 || state.cells[ridx][cidx] !== 0) return
@@ -226,6 +227,7 @@
           )
         }),
       )
+      ctx.globalAlpha = 1
     }
 
     if (state.lastPlace) {

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { t } from 'svelte-i18n'
+
   import type { User } from '../types/user'
 
   export let player: {
@@ -13,9 +15,9 @@
   <div class="card-content">
     <span class="subtitle is-1">{player.user.nickname}</span>
     <ul>
-      <li>Final score: {player.finalScore}</li>
-      <li>Hint score: {player.hintScore}</li>
-      <li>RP score: {player.rpScore}</li>
+      <li>{$t('game.score.final')}: {player.finalScore}</li>
+      <li>{$t('game.score.hint')}: {player.hintScore}</li>
+      <li>{$t('game.score.rp')}: {player.rpScore}</li>
     </ul>
   </div>
 </div>

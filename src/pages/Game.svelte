@@ -28,6 +28,7 @@
   import Statusbar from '../components/Statusbar.svelte'
   import { notificationApi } from '../store/notification'
   import { derived } from 'svelte/store'
+  import { t } from 'svelte-i18n'
 
   const hintPending = derived(
     [bestMoveFx.pending, bestQuarterFx.pending, heatmapFx.pending],
@@ -56,9 +57,11 @@
         class="notification is-info is-flex is-align-items-center is-flex-direction-column"
       >
         <div class="mb-2">
-          <span class="is-size-3">No current game</span>
+          <span class="is-size-3">{$t('game.nocurrent')}</span>
         </div>
-        <Navigate to="/" styles="button is-primary">Go home</Navigate>
+        <Navigate to="/" styles="button is-primary"
+          >{$t('game.gohome')}</Navigate
+        >
       </div>
     </div>
   </div>
@@ -66,10 +69,10 @@
   <div class="mt-3 columns is-centered">
     <div class="is-half column">
       <div class="notification is-info">
-        <span class="is-size-3">Waiting game</span>
+        <span class="is-size-3">{$t('game.wait')}</span>
         <button
           class="button is-primary is-pulled-right is-medium"
-          on:click={() => resign()}>Cancel</button
+          on:click={() => resign()}>{$t('cancel')}</button
         >
       </div>
     </div>
@@ -95,7 +98,7 @@
       <div class="level-left">
         <div class="level-item">
           <span class="is-size-4" class:has-text-primary={$whiteTimer.isActive}
-            >White: {$gameSummary.white.nickname}</span
+            >{$t('white')}: {$gameSummary.white.nickname}</span
           >
         </div>
       </div>
@@ -105,7 +108,7 @@
             <div class="dropdown-trigger">
               <button class="button">
                 <span class="icon is-small"><Gear /></span>
-                Settings
+                {$t('game.settings.title')}
                 <span class="icon is-small"><CaretDown /></span>
               </button>
             </div>
@@ -116,14 +119,20 @@
                   class="dropdown-item"
                   on:click={() => boardApi.toggleShowProbabilityMap()}
                 >
-                  {$board.showProbabilityMap ? 'Hide' : 'Show'} territory (U)
+                  {$board.showProbabilityMap
+                    ? $t('game.settings.hide')
+                    : $t('game.settings.show')}
+                  {$t('game.settings.territory')} (U)
                 </a>
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
                   on:click={() => (showStatusbar = !showStatusbar)}
                 >
-                  {showStatusbar ? 'Hide' : 'Show'} statusbar (I)
+                  {showStatusbar
+                    ? $t('game.settings.hide')
+                    : $t('game.settings.show')}
+                  {$t('game.settings.statusbar')} (I)
                 </a>
               </div>
             </div>
@@ -138,7 +147,7 @@
         </div>
         <div class="level-item">
           <button class="button is-danger is-outlined" on:click={() => resign()}
-            >Resign</button
+            >{$t('game.resign')}</button
           >
         </div>
       </div>
@@ -153,7 +162,7 @@
       <div class="level-left">
         <div class="level-item">
           <span class="is-size-4" class:has-text-primary={$blackTimer.isActive}
-            >Black: {$gameSummary.black.nickname}</span
+            >{$t('black')}: {$gameSummary.black.nickname}</span
           >
         </div>
       </div>
@@ -161,14 +170,14 @@
         {#if $board.leelaHints.length}
           <div class="level-item">
             <button class="button" on:click={() => boardApi.clearLeelaHints()}
-              >Clear hints (A)</button
+              >{$t('game.clear.hints')} (A)</button
             >
           </div>
         {/if}
         {#if $selectedCoords.size}
           <div class="level-item">
             <button class="button" on:click={() => selectedApi.clear()}
-              >Clear selection (S)</button
+              >{$t('game.clear.selection')} (S)</button
             >
           </div>
         {/if}
@@ -177,7 +186,7 @@
             <div class="dropdown-trigger">
               <button class="button" class:is-loading={$hintPending}>
                 <span class="icon is-small"><Controller /></span>
-                Leela
+                {$t('game.hints.title')}
                 <span class="icon is-small">
                   <CaretUp />
                 </span>
@@ -191,20 +200,21 @@
                   class:has-text-grey={$hintPending}
                   on:click={bestMoveHandler}
                 >
-                  Best move (Q)
+                  {$t('game.hints.bestMove')} (Q)
                 </a>
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
                   class:has-text-grey={$selectedCoords.size || $hintPending}
-                  on:click={bestQuarterHandler}>Best quarter (W)</a
+                  on:click={bestQuarterHandler}
+                  >{$t('game.hints.bestQuarter')} (W)</a
                 >
                 <hr class="dropdown-divider" />
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <a
                   class="dropdown-item"
                   class:has-text-grey={$hintPending}
-                  on:click={heatmapHandler}>Heatmap (E)</a
+                  on:click={heatmapHandler}>{$t('game.hints.heatmap')} (E)</a
                 >
               </div>
             </div>
@@ -221,7 +231,7 @@
           <button
             disabled={$locking}
             class="button is-warning is-outlined"
-            on:click={() => pass()}>Pass (P)</button
+            on:click={() => pass()}>{$t('game.pass')} (P)</button
           >
         </div>
       </div>

@@ -3,8 +3,8 @@
   import { DoorOpen } from 'svelte-bootstrap-icons/lib/DoorOpen'
   import { Cpu } from 'svelte-bootstrap-icons/lib/Cpu'
   import { DoorClosed } from 'svelte-bootstrap-icons/lib/DoorClosed'
-  import { People } from 'svelte-bootstrap-icons/lib/People'
   import { Play } from 'svelte-bootstrap-icons/lib/Play'
+  import { t } from 'svelte-i18n'
 
   import {
     createGameWithBot,
@@ -35,7 +35,7 @@
       on:click={() => joinCurrentGame()}
     >
       <span class="icon"><Play /></span>
-      <span>Resume current game</span>
+      <span>{$t('home.resume')}</span>
     </button>
     <fieldset disabled={$waitCurrentGame || $currentGame}>
       <button
@@ -43,7 +43,7 @@
         on:click={() => createGameWithRandom()}
       >
         <span class="icon"><Shuffle /></span>
-        <span>Play with random opponent</span>
+        <span>{$t('home.random')}</span>
       </button>
       <button
         class="button is-fullwidth mb-3 is-large is-primary"
@@ -52,7 +52,7 @@
         <span class="icon">
           <Cpu />
         </span>
-        <span>Play with bot</span></button
+        <span>{$t('home.bot')}</span></button
       >
       <button
         class="button is-fullwidth mb-3 is-large is-primary"
@@ -61,7 +61,7 @@
         <span class="icon">
           <DoorClosed />
         </span>
-        <span>Create closed game</span></button
+        <span>{$t('home.create-closed')}</span></button
       >
       <button
         class="button is-fullwidth mb-3 is-large is-primary"
@@ -70,13 +70,7 @@
         <span class="icon">
           <DoorOpen />
         </span>
-        <span>Connect to closed game</span></button
-      >
-      <button disabled class="button is-fullwidth mb-3 is-large is-primary">
-        <span class="icon">
-          <People />
-        </span>
-        <span>Create local game</span></button
+        <span>{$t('home.connect-closed')}</span></button
       >
     </fieldset>
   </div>
